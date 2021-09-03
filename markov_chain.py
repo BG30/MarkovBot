@@ -7,11 +7,19 @@ class MarkovModel:
     def __init__(self):
         self.model = DataStorage()
         self.model.setup_db()
+        self.unsafe_terms = []
 
     def clean_db(self):
         self.model.clean_db()
 
+    def define_unsafe_terms(self, terms):
+        for word in terms:
+            self.unsafe_terms.append(self.model.clean_data(word))
+
     def train_model(self, training_data):
+        if self.unsafe_terms in training_data:
+            return
+
         token_list = training_data.strip().split()
         self.model.insert_data(self.model.start, token_list[0])
 
