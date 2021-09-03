@@ -41,7 +41,7 @@ class MarkovModel:
     def generate_response(self):
         random.seed(time.time())
         response_limit = self.model.get_response_length()
-        next_word = self.choose_word(self.model.start, self.generate_next_word_percentage(self.model.start))
+        next_word = self.__choose_word(self.model.start, self.__generate_next_word_percentage(self.model.start))
         if next_word == self.model.end:
             return ""
 
@@ -51,9 +51,9 @@ class MarkovModel:
         while True:
             next_word = self.model.clean_data(next_word)
             if i <= response_limit:
-                next_word = self.choose_word(next_word, self.generate_next_word_percentage(next_word))
+                next_word = self.__choose_word(next_word, self.__generate_next_word_percentage(next_word))
             else:
-                next_word = self.choose_terminating_word(next_word, self.generate_next_word_percentage(next_word))
+                next_word = self.__choose_terminating_word(next_word, self.__generate_next_word_percentage(next_word))
 
             if next_word == self.model.end:
                 return result
@@ -67,7 +67,7 @@ class MarkovModel:
         for pair in pairings:
             if pair[0] == self.model.end:
                 return self.model.end
-        return self.choose_word(origin_word, percentage)
+        return self.__choose_word(origin_word, percentage)
 
     def __choose_word(self, origin_word, percentage):
         best_word = ""
