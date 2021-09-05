@@ -5,7 +5,7 @@ class DataStorage:
     def __init__(self):
         self.start = '__START__'
         self.end = '__TERMINATE__'
-        self.db = DBCore('modelData.db')
+        self.__db = DBCore('modelData.db')
 
     def setup_db(self):
         query = """
@@ -14,7 +14,7 @@ class DataStorage:
                         outCount int
                     );
                 """
-        self.db.update_db_query(query)
+        self.__db.update_db_query(query)
 
         query = """
                     CREATE TABLE IF NOT EXISTS occurrences (
@@ -24,14 +24,14 @@ class DataStorage:
                         PRIMARY KEY(word, partnerWord)
                     );
                 """
-        self.db.update_db_query(query)
+        self.__db.update_db_query(query)
 
-        self.db.update_db_query(f'INSERT OR IGNORE INTO state VALUES("{self.start}", 0);')
-        self.db.update_db_query(f'INSERT OR IGNORE INTO state VALUES("{self.end}", 0);')
+        self.__db.update_db_query(f'INSERT OR IGNORE INTO state VALUES("{self.start}", 0);')
+        self.__db.update_db_query(f'INSERT OR IGNORE INTO state VALUES("{self.end}", 0);')
 
     def clean_db(self):
-        self.db.update_db_query(f"DELETE FROM occurrences;")
-        self.db.update_db_query(
+        self.__db.update_db_query(f"DELETE FROM occurrences;")
+        self.__db.update_db_query(
             f'DELETE FROM state WHERE word <> "{self.start}" OR word <> "{self.end}";')
 
     def insert_data(self, origin_word, target_word):
@@ -39,26 +39,26 @@ class DataStorage:
         target_word = self.clean_data(target_word)
 
         # check if origin and target word already in db and insert as needed
-        self.db.update_db_query(f' INSERT OR IGNORE INTO state VALUES ("{origin_word}", 0); ')
-        self.db.update_db_query(f' INSERT OR IGNORE INTO state VALUES ("{target_word}", 0); ')
+        self.__db.update_db_query(f' INSERT OR IGNORE INTO state VALUES ("{origin_word}", 0); ')
+        self.__db.update_db_query(f' INSERT OR IGNORE INTO state VALUES ("{target_word}", 0); ')
 
         # if occurrence present then increase tally else insert new occurrence
-        self.db.update_db_query(f'INSERT OR IGNORE INTO occurrences VALUES ("{origin_word}", "{target_word}", 0);')
-        self.db.update_db_query(
+        self.__db.update_db_query(f'INSERT OR IGNORE INTO occurrences VALUES ("{origin_word}", "{target_word}", 0);')
+        self.__db.update_db_query(
             f'UPDATE occurrences SET tally = tally + 1 WHERE word = "{origin_word}" AND partnerWord="{target_word}";'
         )
-        self.db.update_db_query(f'UPDATE state SET outCount = outCount + 1 WHERE word = "{origin_word}"')
+        self.__db.update_db_query(f'UPDATE state SET outCount = outCount + 1 WHERE word = "{origin_word}"')
 
     def get_response_length(self):
         # TODO: define better response length heuristic
         return 50
 
     def get_neighbors(self, origin_word):
-        result = self.db.run_query(f'SELECT partnerWord, tally FROM occurrences WHERE word = "{origin_word}";')
+        result = self.__db.run_query(f'SELECT partnerWord, tally FROM occurrences WHERE word = "{origin_word}";')
         return result.fetchall()
 
     def get_number_of_out_connections(self, word):
-        result = self.db.run_query(f'SELECT outCount FROM state WHERE word = "{word}";')
+        result = self.__db.run_query(f'SELECT outCount FROM state WHERE word = "{word}";')
         return result.fetchone()
 
     def search_for_word(self, origin_word, target_word):
