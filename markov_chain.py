@@ -58,10 +58,11 @@ class MarkovModel:
         result = [next_word]
         while True:
             next_word = self.__model.clean_data(next_word)
-            if i <= response_limit:
+            if i < response_limit:
                 next_word = self.__choose_word(next_word, self.__generate_next_word_percentage(next_word))
             else:
-                next_word = self.__choose_terminating_word(next_word, self.__generate_next_word_percentage(next_word))
+                next_word = self.search_for_word(next_word, self.__model.end)
+                return " ".join(result).join(next_word)
 
             if next_word == self.__model.end:
                 return " ".join(result)
@@ -93,3 +94,26 @@ class MarkovModel:
                 best_difference = formula
 
         return best_word
+
+    def search_for_word(self, origin_word, target_word):
+        visited = []
+        queue = [[origin_word]]
+
+        if origin_word == target_word:
+            return target_word
+
+        while queue:
+            path = queue.pop(0)
+            node = path[-1]
+            if node not in visited:
+                # get neighbors
+                neighbors = self.__model.get_neighbors(node)
+                for resident in neighbors:
+                    new_path = list(path)
+                    new_path.append(resident[0])
+                    queue.append(new_path)
+                    if resident[0] == target_word:
+                        return new_path
+                visited.append(node)
+        # default response
+        return self.__model.end

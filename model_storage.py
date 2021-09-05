@@ -61,18 +61,6 @@ class DataStorage:
         result = self.__db.run_query(f'SELECT outCount FROM state WHERE word = "{word}";')
         return result.fetchone()
 
-    def search_for_word(self, origin_word, target_word):
-        #TODO: bfs to quickly find first instance of target_word from origin_word irrespective of edge weights
-        visited = [False] * ()
-
-        queue = []
-
-        queue.append(origin_word)
-        visited[origin_word] = True
-
-        while queue:
-            s = queue.pop()
-
     def clean_data(self, word):
         word = word.replace('"', '\"\"')
         word = word.replace("'", "\'")
