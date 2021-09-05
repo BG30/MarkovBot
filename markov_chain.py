@@ -64,9 +64,10 @@ class MarkovModel:
                 next_word = self.__choose_terminating_word(next_word, self.__generate_next_word_percentage(next_word))
 
             if next_word == self.__model.end:
-                return result
+                return " ".join(result)
             elif i > response_limit*2:
-                return result
+                # backup function termination
+                return " ".join(result)
             result.append(next_word)
             i += 1
 
