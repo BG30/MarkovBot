@@ -72,13 +72,6 @@ class MarkovModel:
             result.append(next_word)
             i += 1
 
-    def __choose_terminating_word(self, origin_word, percentage):
-        pairings = self.__model.get_neighbors(origin_word)
-        for pair in pairings:
-            if pair[0] == self.__model.end:
-                return self.__model.end
-        return self.__choose_word(origin_word, percentage)
-
     def __choose_word(self, origin_word, percentage):
         best_word = ""
         best_difference = 2
