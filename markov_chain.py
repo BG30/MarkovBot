@@ -12,6 +12,7 @@ class MarkovModel:
     def clean_db(self):
         self.__model.clean_db()
 
+    # TODO complete functionality to not train on data which contains 'unsafe terms'
     def define_unsafe_terms(self, terms):
         for word in terms:
             self.unsafe_terms.append(self.__model.clean_data(word))
@@ -46,9 +47,9 @@ class MarkovModel:
         result = random.uniform(percent_lower, percent_higher)
         return result
 
-    def generate_response(self):
+    def generate_response(self, prompt):
         random.seed(time.time())
-        response_limit = self.__model.get_response_length()
+        response_limit = self.__get_response_length(prompt)
         next_word = self.__choose_word(self.__model.start, self.__generate_next_word_percentage(self.__model.start))
         if next_word == self.__model.end:
             return ""
@@ -110,3 +111,9 @@ class MarkovModel:
                 visited.append(node)
         # default response
         return self.__model.end
+
+    def __get_response_length(self, prompt):
+        if prompt != "":
+            return math.ceil(len(prompt) * random.uniform(0.5, 3))
+        else:
+            return 40 + random.randint(0, 20)

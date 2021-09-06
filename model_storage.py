@@ -1,4 +1,7 @@
+import math
+
 from core_db_functions import *
+import random
 
 
 class DataStorage:
@@ -48,10 +51,6 @@ class DataStorage:
             f'UPDATE occurrences SET tally = tally + 1 WHERE word = "{origin_word}" AND partnerWord="{target_word}";'
         )
         self.__db.update_db_query(f'UPDATE state SET outCount = outCount + 1 WHERE word = "{origin_word}"')
-
-    def get_response_length(self):
-        # TODO: define better response length heuristic
-        return 50
 
     def get_neighbors(self, origin_word):
         result = self.__db.run_query(f'SELECT partnerWord, tally FROM occurrences WHERE word = "{origin_word}";')
