@@ -12,6 +12,18 @@ class RedditLayer:
     def __del__(self):
         pass
 
+    def clean_model(self):
+        self.__model.clean_db()
+
+    def loop_in_subreddit(self, sub, num_posts):
+        for submission in self.user.subreddit(sub).hot(limit=num_posts):
+            for comment in submission.comments:
+                if hasattr(comment, "body"):
+                    self.__train_on_data(comment)
+
+    def generate_response(self, prompt):
+        return self.__model.generate_response(prompt)
+
     def __setup_reddit_api(self):
         return get_reddit_credentials()
 
@@ -32,10 +44,7 @@ class RedditLayer:
         else:
             return True
 
-    def train_on_data(self, comment_instance):
-        if not hasattr(comment_instance, "body"):
-            return
-
+    def __train_on_data(self, comment_instance):
         if self.find_id(comment_instance):
             # comment_instance already interacted with
             return
@@ -45,10 +54,10 @@ class RedditLayer:
 
     def __setup_comment_id_history(self):
         query = """
-                            CREATE TABLE IF NOT EXISTS post (
-                                id varchar(7) PRIMARY KEY
-                            );
-                        """
+                    CREATE TABLE IF NOT EXISTS post (
+                        id varchar(7) PRIMARY KEY
+                    );
+                """
         self.__db.update_db_query(query)
 
     def store_comment_id(self, comment_instance):
