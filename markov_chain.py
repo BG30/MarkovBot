@@ -1,6 +1,7 @@
 import time
 from model_storage import *
 import random
+import math
 
 
 class MarkovModel:
@@ -62,7 +63,7 @@ class MarkovModel:
             if i < response_limit:
                 next_word = self.__choose_word(next_word, self.__generate_next_word_percentage(next_word))
             else:
-                next_word = self.search_for_word(next_word, self.__model.end)
+                next_word = self.search_for_connection(next_word, self.__model.end)
                 return " ".join(result).join(next_word)
 
             if next_word == self.__model.end:
@@ -89,7 +90,7 @@ class MarkovModel:
 
         return best_word
 
-    def search_for_word(self, origin_word, target_word):
+    def search_for_connection(self, origin_word, target_word):
         visited = []
         queue = [[origin_word]]
 

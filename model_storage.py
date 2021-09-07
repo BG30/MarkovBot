@@ -1,7 +1,4 @@
-import math
-
 from core_db_functions import *
-import random
 
 
 class DataStorage:
