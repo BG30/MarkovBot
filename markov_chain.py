@@ -102,8 +102,10 @@ class MarkovModel:
             node = path[-1]
             if node not in visited:
                 # get neighbors
-                neighbors = self.__model.get_neighbors(node)
+                neighbors = self.__model.get_neighbors(self.__model.clean_data(node))
                 for resident in neighbors:
+                    if resident[0] == self.__model.end:
+                        return path
                     new_path = list(path)
                     new_path.append(resident[0])
                     queue.append(new_path)
@@ -111,7 +113,7 @@ class MarkovModel:
                         return new_path
                 visited.append(node)
         # default response
-        return self.__model.end
+        return ""
 
     def __get_response_length(self, prompt):
         if prompt != "":
